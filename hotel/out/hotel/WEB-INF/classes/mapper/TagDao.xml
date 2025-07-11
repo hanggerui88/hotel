@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.TagDao">
+
+    <resultMap type="com.zxd.pojo.Tag" id="TagMap">
+        <result property="tagId" column="tag_id" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TagMap">
+        select
+          tag_id, content
+        from tag
+        where tag_id = #{tagId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TagMap">
+        select
+          tag_id, content
+        from tag
+        <where>
+            <if test="t.tagId != null">
+                and tag_id = #{t.tagId}
+            </if>
+            <if test="t.content != null and t.content != ''">
+                and content = #{t.content}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from tag
+        <where>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="tagId" useGeneratedKeys="true">
+        insert into tag(content)
+        values (#{content})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="tagId" useGeneratedKeys="true">
+        insert into tag(content)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.content})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="tagId" useGeneratedKeys="true">
+        insert into tag(content)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.content})
+        </foreach>
+        on duplicate key update
+        content = values(content)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="com.zxd.pojo.Tag">
+        update tag
+        <set>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+        </set>
+        where tag_id = #{tagId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tag where tag_id = #{tagId}
+    </delete>
+<!--狗屎！！！！！！！！！resultMap ="TagMap"-->
+    <select id="list" resultMap ="TagMap">
+        select tag_id, content from tag
+        <where>
+            <if test="record.tagId != null">
+                and tag_id = #{record.tagId}
+            </if>
+            <if test="record.content != null and record.content != ''">
+                and content = #{record.content}
+            </if>
+        </where>
+        limit #{p.start},#{p.count}
+    </select>
+
+</mapper>
+

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.StaffDao">
+
+    <resultMap type="com.zxd.pojo.Staff" id="StaffMap">
+        <result property="staffId" column="staff_id" jdbcType="INTEGER"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="department" column="department" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="qx" column="qx" jdbcType="VARCHAR"/>
+        <result property="notes" column="notes" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="StaffMap">
+        select
+          staff_id, password, username, department, email, qx, notes
+        from staff
+        where staff_id = #{staffId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="StaffMap">
+        SELECT s.staff_id, s.username, s.department, s.email, s.qx, s.notes
+        FROM staff s
+        <where>
+            <!-- 修正：直接使用属性名（无前缀） -->
+            <if test="aaa.staffId != null">
+                AND s.staff_id = #{aaa.staffId}
+            </if>
+            <if test="aaa.password != null and aaa.password != ''">
+                AND s.password = #{aaa.password}
+            </if>
+            <if test="aaa.username != null and aaa.username != ''">
+                AND s.username = #{aaa.username}
+            </if>
+            <!-- 其他条件同理修改 -->
+        </where>
+        LIMIT #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from staff
+        <where>
+            <if test="staffId != null">
+                and staff_id = #{staffId}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="department != null and department != ''">
+                and department = #{department}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="qx != null and qx != ''">
+                and qx = #{qx}
+            </if>
+            <if test="notes != null and notes != ''">
+                and notes = #{notes}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(password, username, department, email, qx, notes)
+        values (#{password}, #{username}, #{department}, #{email}, #{qx}, #{notes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(password, username, department, email, qx, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.password}, #{entity.username}, #{entity.department}, #{entity.email}, #{entity.qx}, #{entity.notes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="staffId" useGeneratedKeys="true">
+        insert into staff(password, username, department, email, qx, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.password}, #{entity.username}, #{entity.department}, #{entity.email}, #{entity.qx}, #{entity.notes})
+        </foreach>
+        on duplicate key update
+        password = values(password),
+        username = values(username),
+        department = values(department),
+        email = values(email),
+        qx = values(qx),
+        notes = values(notes)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update staff
+        <set>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="department != null and department != ''">
+                department = #{department},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="qx != null and qx != ''">
+                qx = #{qx},
+            </if>
+            <if test="notes != null and notes != ''">
+                notes = #{notes},
+            </if>
+        </set>
+        where staff_id = #{staffId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from staff where staff_id = #{staffId}
+    </delete>
+    <select id="list" resultMap="StaffMap">
+        select staff_id, password, username, department, email, qx, notes from staff
+        <where>
+            <if test="s.staffId != null">
+                and staff_id = #{s.staffId}
+            </if>
+            <if test="s.username != null">
+                and username = #{s.username}
+            </if>
+            <if test="s.department != null and s.department != ''">
+                and department = #{s.department}
+            </if>
+            <if test="s.email != null">
+                and email = #{s.email}
+            </if>
+
+        </where>
+        limit #{p.start},#{p.count}
+    </select>
+</mapper>
+

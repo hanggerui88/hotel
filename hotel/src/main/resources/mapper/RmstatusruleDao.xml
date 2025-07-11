@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.RmstatusruleDao">
+
+    <resultMap type="com.zxd.pojo.Rmstatusrule" id="RmstatusruleMap">
+        <result property="rmstatusruleId" column="rmstatusrule_id" jdbcType="INTEGER"/>
+        <result property="dateStart" column="date_start" jdbcType="TIMESTAMP"/>
+        <result property="dateEnd" column="date_end" jdbcType="TIMESTAMP"/>
+        <result property="rmtypeId" column="rmtype_id" jdbcType="INTEGER"/>
+        <result property="rmNumber" column="rm_number" jdbcType="INTEGER"/>
+        <result property="statusNumber" column="status_number" jdbcType="INTEGER"/>
+        <result property="note" column="note" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="notes" column="notes" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RmstatusruleMap">
+        select
+          rmstatusrule_id, date_start, date_end, rmtype_id, rm_number, status_number, notes
+        from rmstatusrule
+        where rmstatusrule_id = #{rmstatusruleId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RmstatusruleMap">
+        select
+          rmstatusrule_id, date_start, date_end, rt.name as name, rm_number, status_number, rmr.notes as note
+        from rmstatusrule rmr
+        left join roomtype rt on rmr.rmtype_id=rt.rmtype_id
+
+
+        <where>
+            <if test="rm_r.rmstatusruleId != null">
+                and rmstatusrule_id = #{rm_r.rmstatusruleId}
+            </if>
+            <if test="rm_r.dateStart != null">
+                and date_start = #{rm_r.dateStart}
+            </if>
+            <if test="rm_r.dateEnd != null">
+                and date_end = #{rm_r.dateEnd}
+            </if>
+            <if test="rm_r.rmtypeId != null">
+                and rmr.rmtype_id = #{rm_r.rmtypeId}
+            </if>
+            <if test="rm_r.rmNumber != null">
+                and rm_number = #{rm_r.rmNumber}
+            </if>
+            <if test="rm_r.statusNumber != null">
+                and status_number = #{rm_r.statusNumber}
+            </if>
+            <if test="rm_r.notes != null and notes != ''">
+                and notes = #{rm_r.notes}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from rmstatusrule
+        <where>
+            <if test="rmstatusruleId != null">
+                and rmstatusrule_id = #{rmstatusruleId}
+            </if>
+            <if test="dateStart != null">
+                and date_start = #{dateStart}
+            </if>
+            <if test="dateEnd != null">
+                and date_end = #{dateEnd}
+            </if>
+            <if test="rmtypeId != null">
+                and rmtype_id = #{rmtypeId}
+            </if>
+            <if test="rmNumber != null">
+                and rm_number = #{rmNumber}
+            </if>
+            <if test="statusNumber != null">
+                and status_number = #{statusNumber}
+            </if>
+            <if test="notes != null and notes != ''">
+                and notes = #{notes}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rmstatusruleId" useGeneratedKeys="true">
+        insert into rmstatusrule(date_start, date_end, rmtype_id, rm_number, status_number, notes)
+        values (#{dateStart}, #{dateEnd}, #{rmtypeId}, #{rmNumber}, #{statusNumber}, #{notes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rmstatusruleId" useGeneratedKeys="true">
+        insert into rmstatusrule(date_start, date_end, rmtype_id, rm_number, status_number, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.dateStart}, #{entity.dateEnd}, #{entity.rmtypeId}, #{entity.rmNumber}, #{entity.statusNumber}, #{entity.notes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rmstatusruleId" useGeneratedKeys="true">
+        insert into rmstatusrule(date_start, date_end, rmtype_id, rm_number, status_number, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dateStart}, #{entity.dateEnd}, #{entity.rmtypeId}, #{entity.rmNumber}, #{entity.statusNumber}, #{entity.notes})
+        </foreach>
+        on duplicate key update
+        date_start = values(date_start),
+        date_end = values(date_end),
+        rmtype_id = values(rmtype_id),
+        rm_number = values(rm_number),
+        status_number = values(status_number),
+        notes = values(notes)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update rmstatusrule
+        <set>
+            <if test="dateStart != null">
+                date_start = #{dateStart},
+            </if>
+            <if test="dateEnd != null">
+                date_end = #{dateEnd},
+            </if>
+            <if test="rmtypeId != null">
+                rmtype_id = #{rmtypeId},
+            </if>
+            <if test="rmNumber != null">
+                rm_number = #{rmNumber},
+            </if>
+            <if test="statusNumber != null">
+                status_number = #{statusNumber},
+            </if>
+            <if test="notes != null and notes != ''">
+                notes = #{notes},
+            </if>
+        </set>
+        where rmstatusrule_id = #{rmstatusruleId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from rmstatusrule where rmstatusrule_id = #{rmstatusruleId}
+    </delete>
+
+</mapper>
+

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.RoomDao">
+
+    <resultMap type="com.zxd.pojo.Room" id="RoomMap">
+        <result property="rmNumber" column="rm_number" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+        <result property="commentContent" column="comment_content" jdbcType="VARCHAR"/>
+        <result property="pf" column="pf" jdbcType="VARCHAR"/>
+        <result property="pj" column="pj" jdbcType="VARCHAR"/>
+        <result property="hj" column="hj" jdbcType="VARCHAR"/>
+        <result property="ws" column="ws" jdbcType="VARCHAR"/>
+        <result property="fw" column="fw" jdbcType="VARCHAR"/>
+        <result property="ss" column="ss" jdbcType="VARCHAR"/>
+        <result property="roomtypeId" column="roomtype_id" jdbcType="INTEGER"/>
+        <result property="tagId" column="tag_id" jdbcType="INTEGER"/>
+        <result property="notes" column="notes" jdbcType="VARCHAR"/>
+        <result property="rmtype" column="rmtype"/>
+        <result property="tagContent" column="tagContent"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RoomMap">
+        select
+          rm_number, name, image, comment_content, pf, pj, hj, ws, fw, ss, roomtype_id, tag_id, notes
+        from room
+        where rm_number = #{rmNumber}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RoomMap">
+        select
+        r.rm_number, r.name, r.image, r.comment_content, r.pf, r.pj, r.hj, r.ws, r.fw, r.ss,
+        r.roomtype_id, r.tag_id, r.notes,
+        rt.name as rmtype, t.content as tagContent
+        from room r
+        left join roomtype rt  on r.roomtype_id =rt.rmtype_id
+        left join tag t on r.tag_id= t.tag_id
+
+        <where>
+            <if test="rm.rmNumber != null">
+                and r.rm_number = #{rm.rmNumber}
+            </if>
+            <if test="rm.name != null and rm.name != ''">
+                and r.name = #{rm.name}
+            </if>
+            <if test="rm.image != null and rm.image != ''">
+                and r.image = #{rm.image}
+            </if>
+            <if test="rm.commentContent != null and rm.commentContent != ''">
+                and r.comment_content = #{rm.commentContent}
+            </if>
+            <if test="rm.pf != null and rm.pf != ''">
+                and r.pf = #{rm.pf}
+            </if>
+            <if test="rm.pj != null and rm.pj != ''">
+                and r.pj = #{rm.pj}
+            </if>
+            <if test="rm.hj != null and rm.hj != ''">
+                and r.hj = #{rm.hj}
+            </if>
+            <if test="rm.ws != null and rm.ws != ''">
+                and r.ws = #{rm.ws}
+            </if>
+            <if test="rm.fw != null and rm.fw != ''">
+                and r.fw = #{rm.fw}
+            </if>
+            <if test="rm.ss != null and rm.ss != ''">
+                and r.ss = #{rm.ss}
+            </if>
+            <if test="rm.roomtypeId != null">
+                and r.roomtype_id = #{rm.roomtypeId}
+            </if>
+            <if test="rm.tagId != null">
+                and r.tag_id = #{rm.tagId}
+            </if>
+            <if test="rm.notes != null and rm.notes != ''">
+                and r.notes = #{rm.notes}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from room
+        <where>
+            <if test="rmNumber != null">
+                and rm_number = #{rmNumber}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="image != null and image != ''">
+                and image = #{image}
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                and comment_content = #{commentContent}
+            </if>
+            <if test="pf != null and pf != ''">
+                and pf = #{pf}
+            </if>
+            <if test="pj != null and pj != ''">
+                and pj = #{pj}
+            </if>
+            <if test="hj != null and hj != ''">
+                and hj = #{hj}
+            </if>
+            <if test="ws != null and ws != ''">
+                and ws = #{ws}
+            </if>
+            <if test="fw != null and fw != ''">
+                and fw = #{fw}
+            </if>
+            <if test="ss != null and ss != ''">
+                and ss = #{ss}
+            </if>
+            <if test="roomtypeId != null">
+                and roomtype_id = #{roomtypeId}
+            </if>
+            <if test="tagId != null">
+                and tag_id = #{tagId}
+            </if>
+            <if test="notes != null and notes != ''">
+                and notes = #{notes}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rmNumber" useGeneratedKeys="true">
+        insert into room(rm_number,name, image, comment_content, pf, pj, hj, ws, fw, ss, roomtype_id, tag_id, notes)
+        values (#{rmNumber},#{name}, #{image}, #{commentContent}, #{pf}, #{pj}, #{hj}, #{ws}, #{fw}, #{ss}, #{roomtypeId}, #{tagId}, #{notes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rmNumber" useGeneratedKeys="true">
+        insert into room(name, image, comment_content, pf, pj, hj, ws, fw, ss, roomtype_id, tag_id, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.name}, #{entity.image}, #{entity.commentContent}, #{entity.pf}, #{entity.pj}, #{entity.hj}, #{entity.ws}, #{entity.fw}, #{entity.ss}, #{entity.roomtypeId}, #{entity.tagId}, #{entity.notes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rmNumber" useGeneratedKeys="true">
+        insert into room(rm_number,name, image, comment_content, pf, pj, hj, ws, fw, ss, roomtype_id, tag_id, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.rmNumber},#{entity.image}, #{entity.commentContent}, #{entity.pf}, #{entity.pj}, #{entity.hj}, #{entity.ws}, #{entity.fw}, #{entity.ss}, #{entity.roomtypeId}, #{entity.tagId}, #{entity.notes})
+        </foreach>
+        on duplicate key update
+        rm_number=values(rmNumber)
+        name = values(name),
+        image = values(image),
+        comment_content = values(comment_content),
+        pf = values(pf),
+        pj = values(pj),
+        hj = values(hj),
+        ws = values(ws),
+        fw = values(fw),
+        ss = values(ss),
+        roomtype_id = values(roomtype_id),
+        tag_id = values(tag_id),
+        notes = values(notes)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update room
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+            <if test="commentContent != null and commentContent != ''">
+                comment_content = #{commentContent},
+            </if>
+            <if test="pf != null and pf != ''">
+                pf = #{pf},
+            </if>
+            <if test="pj != null and pj != ''">
+                pj = #{pj},
+            </if>
+            <if test="hj != null and hj != ''">
+                hj = #{hj},
+            </if>
+            <if test="ws != null and ws != ''">
+                ws = #{ws},
+            </if>
+            <if test="fw != null and fw != ''">
+                fw = #{fw},
+            </if>
+            <if test="ss != null and ss != ''">
+                ss = #{ss},
+            </if>
+            <if test="roomtypeId != null">
+                roomtype_id = #{roomtypeId},
+            </if>
+            <if test="tagId != null">
+                tag_id = #{tagId},
+            </if>
+            <if test="notes != null and notes != ''">
+                notes = #{notes},
+            </if>
+        </set>
+        where rm_number = #{rmNumber}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from room where rm_number = #{rmNumber}
+    </delete>
+
+</mapper>
+

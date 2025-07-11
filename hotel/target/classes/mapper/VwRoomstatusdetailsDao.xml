@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.VwRoomstatusdetailsDao">
+
+    <resultMap type="com.zxd.pojo.VwRoomstatusdetails" id="VwRoomstatusdetailsMap">
+        <result property="ddate" column="ddate" jdbcType="TIMESTAMP"/>
+        <result property="rmNumber" column="rm_number" jdbcType="INTEGER"/>
+        <result property="rmName" column="rm_name" jdbcType="VARCHAR"/>
+        <result property="rmType" column="rm_type" jdbcType="VARCHAR"/>
+        <result property="rmStatus" column="rm_status" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="VwRoomstatusdetailsMap">
+        select
+          ddate, rm_number, rm_name, rm_type, rm_status, image
+        from vw_roomstatusdetails
+        where ddate = #{ddate}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="VwRoomstatusdetailsMap">
+        select
+          ddate, rm_number, rm_name, rm_type, rm_status, image
+        from vw_roomstatusdetails
+        <where>
+            <if test="vm_s.ddate != null">
+                and ddate = #{vm_s.ddate}
+            </if>
+            <if test="vm_s.rmNumber != null">
+                and rm_number = #{vm_s.rmNumber}
+            </if>
+            <if test="vm_s.rmName != null and vm_s.rmName != ''">
+                and rm_name = #{vm_s.rmName}
+            </if>
+            <if test="vm_s.rmType != null and vm_s.rmType != ''">
+                and rm_type = #{vm_s.rmType}
+            </if>
+            <if test="vm_s.rmStatus != null and vm_s.rmStatus != ''">
+                and rm_status = #{vm_s.rmStatus}
+            </if>
+            <if test="vm_s.image != null and vm_s.image != ''">
+                and image = #{vm_s.image}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from vw_roomstatusdetails
+        <where>
+            <if test="ddate != null">
+                and ddate = #{ddate}
+            </if>
+            <if test="rmNumber != null">
+                and rm_number = #{rmNumber}
+            </if>
+            <if test="rmName != null and rmName != ''">
+                and rm_name = #{rmName}
+            </if>
+            <if test="rmType != null and rmType != ''">
+                and rm_type = #{rmType}
+            </if>
+            <if test="rmStatus != null and rmStatus != ''">
+                and rm_status = #{rmStatus}
+            </if>
+            <if test="image != null and image != ''">
+                and image = #{image}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="" useGeneratedKeys="true">
+        insert into vw_roomstatusdetails(ddate, rm_number, rm_name, rm_type, rm_status, image)
+        values (#{ddate}, #{rmNumber}, #{rmName}, #{rmType}, #{rmStatus}, #{image})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="" useGeneratedKeys="true">
+        insert into vw_roomstatusdetails(ddate, rm_number, rm_name, rm_type, rm_status, image)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.ddate}, #{entity.rmNumber}, #{entity.rmName}, #{entity.rmType}, #{entity.rmStatus}, #{entity.image})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="" useGeneratedKeys="true">
+        insert into vw_roomstatusdetails(ddate, rm_number, rm_name, rm_type, rm_status, image)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.ddate}, #{entity.rmNumber}, #{entity.rmName}, #{entity.rmType}, #{entity.rmStatus}, #{entity.image})
+        </foreach>
+        on duplicate key update
+        ddate = values(ddate),
+        rm_number = values(rm_number),
+        rm_name = values(rm_name),
+        rm_type = values(rm_type),
+        rm_status = values(rm_status),
+        image = values(image)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update vw_roomstatusdetails
+        <set>
+            <if test="ddate != null">
+                ddate = #{ddate},
+            </if>
+            <if test="rmNumber != null">
+                rm_number = #{rmNumber},
+            </if>
+            <if test="rmName != null and rmName != ''">
+                rm_name = #{rmName},
+            </if>
+            <if test="rmType != null and rmType != ''">
+                rm_type = #{rmType},
+            </if>
+            <if test="rmStatus != null and rmStatus != ''">
+                rm_status = #{rmStatus},
+            </if>
+            <if test="image != null and image != ''">
+                image = #{image},
+            </if>
+        </set>
+        where ddate = #{ddate}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from vw_roomstatusdetails  where ddate = #{ddate}
+    </delete>
+
+</mapper>
+

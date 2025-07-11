@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.RoomtypeDao">
+
+    <resultMap type="com.zxd.pojo.Roomtype" id="RoomtypeMap">
+        <result property="rmtypeId" column="rmtype_id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="rate" column="rate" jdbcType="INTEGER"/>
+        <result property="notes" column="notes" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryAll" resultMap="RoomtypeMap">
+        SELECT
+            rmtype_id, name, rate, notes
+        FROM roomtype
+    </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="RoomtypeMap">
+        SELECT
+            rmtype_id, name, rate, notes
+        FROM roomtype
+        WHERE rmtype_id = #{id}
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RoomtypeMap">
+        select
+          rmtype_id, name, rate, notes
+        from roomtype
+        <where>
+            <if test="rt.rmtypeId != null">
+                and rmtype_id = #{rt.rmtypeId}
+            </if>
+            <if test="rt.name != null and rt.name != ''">
+                and name = #{rt.name}
+            </if>
+            <if test="rt.rate != null">
+                and rate = #{rt.rate}
+            </if>
+            <if test="rt.notes != null and rt.notes != ''">
+                and notes = #{rt.notes}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from roomtype
+        <where>
+            <if test="rmtypeId != null">
+                and rmtype_id = #{rmtypeId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="rate != null">
+                and rate = #{rate}
+            </if>
+            <if test="notes != null and notes != ''">
+                and notes = #{notes}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rmtypeId" useGeneratedKeys="true">
+        insert into roomtype(name, rate, notes)
+        values (#{name}, #{rate}, #{notes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rmtypeId" useGeneratedKeys="true">
+        insert into roomtype(name, rate, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.name}, #{entity.rate}, #{entity.notes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rmtypeId" useGeneratedKeys="true">
+        insert into roomtype(name, rate, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.name}, #{entity.rate}, #{entity.notes})
+        </foreach>
+        on duplicate key update
+        name = values(name),
+        rate = values(rate),
+        notes = values(notes)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        UPDATE roomtype
+        <set>
+            <if test="rt != null and rt.name != null and rt.name != ''">
+                name = #{rt.name},
+            </if>
+            <if test="rt != null and rt.rate != null">
+                rate = #{rt.rate},
+            </if>
+            <if test="rt != null and rt.notes != null and rt.notes != ''">
+                notes = #{rt.notes}
+            </if>
+        </set>
+        WHERE rmtype_id = #{rt.rmtypeId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from roomtype where rmtype_id = #{rmtypeId}
+    </delete>
+
+    <select id="list" resultMap="RoomtypeMap">
+        select rmtype_id, name, rate, notes from roomtype
+        <where>
+            <if test="record.rmtypeId != null">
+                and rmtype_id = #{record.rmtypeId}
+            </if>
+            <if test="record.name != null and record.name != ''">
+                and name = #{record.name}
+            </if>
+            <if test="record.rate != null">
+                and rate = #{record.rate}
+            </if>
+            <if test="record.notes != null and record.notes != ''">
+                and notes = #{record.notes}
+            </if>
+        </where>
+            limit #{p.start},#{p.count}
+    </select>
+</mapper>
+

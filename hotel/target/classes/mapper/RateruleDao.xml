@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxd.dao.RateruleDao">
+
+    <resultMap type="com.zxd.pojo.Raterule" id="RateruleMap">
+        <result property="rateruleId" column="raterule_id" jdbcType="INTEGER"/>
+        <result property="dateStart" column="date_start" jdbcType="TIMESTAMP"/>
+        <result property="dateEnd" column="date_end" jdbcType="TIMESTAMP"/>
+        <result property="rmtypeId" column="rmtype_id" jdbcType="INTEGER"/>
+        <result property="rmNumber" column="rm_number" jdbcType="INTEGER"/>
+        <result property="mon" column="mon" jdbcType="INTEGER"/>
+        <result property="tue" column="tue" jdbcType="INTEGER"/>
+        <result property="wed" column="wed" jdbcType="INTEGER"/>
+        <result property="thu" column="thu" jdbcType="INTEGER"/>
+        <result property="fri" column="fri" jdbcType="INTEGER"/>
+        <result property="sat" column="sat" jdbcType="INTEGER"/>
+        <result property="sun" column="sun" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="formula" column="formula" jdbcType="VARCHAR"/>
+        <result property="discountValue" column="discount_value" jdbcType="NUMERIC"/>
+        <result property="conditionValue" column="condition_value" jdbcType="NUMERIC"/>
+        <result property="canceltime" column="canceltime" jdbcType="INTEGER"/>
+        <result property="notes" column="notes" jdbcType="VARCHAR"/>
+        <result property="rmtype" column="rmtype" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="RateruleMap">
+        select
+          raterule_id, date_start, date_end, rmtype_id, rm_number, mon, tue, wed, thu, fri, sat, sun, name, formula, discount_value, condition_value, canceltime, notes
+        from raterule
+        where raterule_id = #{rateruleId}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="RateruleMap">
+        select
+          r.raterule_id,  r.date_start,  r.date_end,  rt.name as rmtype , r.rm_number,  r.mon,  r.tue,  r.wed,
+        r.thu,  r.fri,  r.sat,  r.sun,  r.name,  r.formula,  r.discount_value,  r.condition_value,
+               r.canceltime, r.notes
+        from raterule r
+        left join roomtype rt on r.rmtype_id=rt.rmtype_id
+
+        <where>
+            <if test="rr.rateruleId != null">
+                AND r.raterule_id = #{rr.rateruleId}
+            </if>
+            <if test="rr.dateStart != null">
+                AND r.date_start = #{rr.dateStart}
+            </if>
+            <if test="rr.dateEnd != null">
+                AND r.date_end = #{rr.dateEnd}
+            </if>
+            <if test="rr.rmtypeId != null">
+                AND r.rmtype_id = #{rr.rmtypeId}
+            </if>
+            <if test="rr.rmNumber != null">
+                AND r.rm_number = #{rr.rmNumber}
+            </if>
+
+            <if test="rr.name != null and rr.name != ''">
+                AND r.name LIKE CONCAT('%', #{rr.name}, '%')  <!-- 修改为模糊搜索 -->
+            </if>
+            <if test="rr.formula != null and rr.formula != ''">
+                AND r.formula = #{rr.formula}
+            </if>
+            <if test="rr.discountValue != null">
+                AND r.discount_value = #{rr.discountValue}
+            </if>
+            <if test="rr.conditionValue != null">
+                AND r.condition_value = #{rr.conditionValue}
+            </if>
+            <if test="rr.canceltime != null">
+                AND r.canceltime = #{rr.canceltime}
+            </if>
+            <if test="rr.notes != null and rr.notes != ''">
+                AND r.notes LIKE CONCAT('%', #{rr.notes}, '%')  <!-- 修改为模糊搜索 -->
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+<!--    <select id="queryAllByLimit" resultMap="RateruleMap">-->
+<!--        SELECT * FROM raterule LIMIT 10-->
+<!--    </select>-->
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from raterule r
+        <where>
+            <if test="rr.rateruleId != null">
+                AND r.raterule_id = #{rr.rateruleId}
+            </if>
+            <if test="rr.dateStart != null">
+                AND r.date_start = #{rr.dateStart}
+            </if>
+            <if test="rr.dateEnd != null">
+                AND r.date_end = #{rr.dateEnd}
+            </if>
+            <if test="rr.rmtypeId != null">
+                AND r.rmtype_id = #{rr.rmtypeId}
+            </if>
+            <if test="rr.rmNumber != null">
+                AND r.rm_number = #{rr.rmNumber}
+            </if>
+            <if test="rr.mon != null">
+                AND r.mon = #{rr.mon}
+            </if>
+            <if test="rr.tue != null">
+                AND r.tue = #{rr.tue}
+            </if>
+            <if test="rr.wed != null">
+                AND r.wed = #{rr.wed}
+            </if>
+            <if test="rr.thu != null">
+                AND r.thu = #{rr.thu}
+            </if>
+            <if test="rr.fri != null">
+                AND r.fri = #{rr.fri}
+            </if>
+            <if test="rr.sat != null">
+                AND r.sat = #{rr.sat}
+            </if>
+            <if test="rr.sun != null">
+                AND r.sun = #{rr.sun}
+            </if>
+            <if test="rr.name != null and rr.name != ''">
+                AND r.name LIKE CONCAT('%', #{rr.name}, '%')  <!-- 修改为模糊搜索 -->
+            </if>
+            <if test="rr.formula != null and rr.formula != ''">
+                AND r.formula = #{rr.formula}
+            </if>
+            <if test="rr.discountValue != null">
+                AND r.discount_value = #{rr.discountValue}
+            </if>
+            <if test="rr.conditionValue != null">
+                AND r.condition_value = #{rr.conditionValue}
+            </if>
+            <if test="rr.canceltime != null">
+                AND r.canceltime = #{rr.canceltime}
+            </if>
+            <if test="rr.notes != null and rr.notes != ''">
+                AND r.notes LIKE CONCAT('%', #{rr.notes}, '%')
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="rateruleId" useGeneratedKeys="true">
+        insert into raterule(date_start, date_end, rmtype_id, rm_number, mon, tue, wed, thu, fri, sat, sun, name, formula, discount_value, condition_value, canceltime, notes)
+        values (#{dateStart}, #{dateEnd}, #{rmtypeId}, #{rmNumber}, #{mon}, #{tue}, #{wed}, #{thu}, #{fri}, #{sat}, #{sun}, #{name}, #{formula}, #{discountValue}, #{conditionValue}, #{canceltime}, #{notes})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="rateruleId" useGeneratedKeys="true">
+        insert into raterule(date_start, date_end, rmtype_id, rm_number, mon, tue, wed, thu, fri, sat, sun, name, formula, discount_value, condition_value, canceltime, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.dateStart}, #{entity.dateEnd}, #{entity.rmtypeId}, #{entity.rmNumber}, #{entity.mon}, #{entity.tue}, #{entity.wed}, #{entity.thu}, #{entity.fri}, #{entity.sat}, #{entity.sun}, #{entity.name}, #{entity.formula}, #{entity.discountValue}, #{entity.conditionValue}, #{entity.canceltime}, #{entity.notes})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="rateruleId" useGeneratedKeys="true">
+        insert into raterule(date_start, date_end, rmtype_id, rm_number, mon, tue, wed, thu, fri, sat, sun, name, formula, discount_value, condition_value, canceltime, notes)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.dateStart}, #{entity.dateEnd}, #{entity.rmtypeId}, #{entity.rmNumber}, #{entity.mon}, #{entity.tue}, #{entity.wed}, #{entity.thu}, #{entity.fri}, #{entity.sat}, #{entity.sun}, #{entity.name}, #{entity.formula}, #{entity.discountValue}, #{entity.conditionValue}, #{entity.canceltime}, #{entity.notes})
+        </foreach>
+        on duplicate key update
+        date_start = values(date_start),
+        date_end = values(date_end),
+        rmtype_id = values(rmtype_id),
+        rm_number = values(rm_number),
+        mon = values(mon),
+        tue = values(tue),
+        wed = values(wed),
+        thu = values(thu),
+        fri = values(fri),
+        sat = values(sat),
+        sun = values(sun),
+        name = values(name),
+        formula = values(formula),
+        discount_value = values(discount_value),
+        condition_value = values(condition_value),
+        canceltime = values(canceltime),
+        notes = values(notes)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update raterule
+        <set>
+            <if test="dateStart != null">
+                date_start = #{dateStart},
+            </if>
+            <if test="dateEnd != null">
+                date_end = #{dateEnd},
+            </if>
+            <if test="rmtypeId != null">
+                rmtype_id = #{rmtypeId},
+            </if>
+            <if test="rmNumber != null">
+                rm_number = #{rmNumber},
+            </if>
+            <if test="mon != null">
+                mon = #{mon},
+            </if>
+            <if test="tue != null">
+                tue = #{tue},
+            </if>
+            <if test="wed != null">
+                wed = #{wed},
+            </if>
+            <if test="thu != null">
+                thu = #{thu},
+            </if>
+            <if test="fri != null">
+                fri = #{fri},
+            </if>
+            <if test="sat != null">
+                sat = #{sat},
+            </if>
+            <if test="sun != null">
+                sun = #{sun},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="formula != null and formula != ''">
+                formula = #{formula},
+            </if>
+            <if test="discountValue != null">
+                discount_value = #{discountValue},
+            </if>
+            <if test="conditionValue != null">
+                condition_value = #{conditionValue},
+            </if>
+            <if test="canceltime != null">
+                canceltime = #{canceltime},
+            </if>
+            <if test="notes != null and notes != ''">
+                notes = #{notes},
+            </if>
+        </set>
+        where raterule_id = #{rateruleId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from raterule where raterule_id = #{rateruleId}
+    </delete>
+
+</mapper>
+
